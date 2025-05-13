@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { FiHome, FiMapPin, FiDroplet, FiLayers, FiUser, FiPhone } from 'react-icons/fi';
 
 const PropertyDetails = () => {

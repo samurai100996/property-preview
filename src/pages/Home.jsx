@@ -13,7 +13,7 @@ const progressData = [
 ];
 
 const properties = [
-  { id: 1, title: 'Luxury Villa', location: 'Beverly Hills', price: '$2.5M', bhk: '4 BHK', image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
+  { id: 1, title: 'Luxury Villa', location: 'Beverly Hills', price: '2.5M', bhk: '4 BHK', image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
   { id: 2, title: 'Modern Apartment', location: 'Downtown', price: '$1.2M', bhk: '3 BHK', image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
   { id: 3, title: 'Beach House', location: 'Malibu', price: '$3.8M', bhk: '5 BHK', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
   { id: 4, title: 'City Penthouse', location: 'Manhattan', price: '$4.5M', bhk: '4 BHK', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
