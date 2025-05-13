@@ -1,22 +1,25 @@
+// src/firebase-admin.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// First, verify environment variables are loading
+console.log('Environment variables:', {
+  VITE_ADMIN_API_KEY: import.meta.env.VITE_ADMIN_API_KEY ? 'exists' : 'MISSING',
+  VITE_ADMIN_AUTH_DOMAIN: import.meta.env.VITE_ADMIN_AUTH_DOMAIN ? 'exists' : 'MISSING'
+});
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBF0IXfo8SSwun1Yw1g4JZeYmNSkH8LF2w",
-  authDomain: "realestateadmin-9ca4d.firebaseapp.com",
-  projectId: "realestateadmin-9ca4d",
-  storageBucket: "realestateadmin-9ca4d.firebasestorage.app",
-  messagingSenderId: "857421498558",
-  appId: "1:857421498558:web:de64ed94fb5070a81376ef"
+const adminConfig = {
+  apiKey: import.meta.env.VITE_ADMIN_API_KEY,
+  authDomain: import.meta.env.VITE_ADMIN_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_ADMIN_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_ADMIN_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_ADMIN_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_ADMIN_APP_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const adminApp = initializeApp(firebaseConfig, "Admin");
-export const adminAuth = getAuth(adminApp);
+// Initialize Firebase Admin instance
+const adminApp = initializeApp(adminConfig, "Admin");
+const adminAuth = getAuth(adminApp);
+
+// Export at the bottom (CommonJS style)
+export { adminAuth };
