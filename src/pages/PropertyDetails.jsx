@@ -1,29 +1,36 @@
 import { useParams } from 'react-router';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { FiShare2, FiHeart, FiMapPin, FiHome, FiLayers } from 'react-icons/fi';
+import { FiShare2, FiHeart, FiMapPin, FiHome } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper/modules';
 
 const PropertyDetails = () => {
-  const { id } = useParams();
-  const [property, setProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { id } = useParams(); // Get the property ID from the URL
+  const [property, setProperty] = useState(null); // State to store property data
+  const [loading, setLoading] = useState(true); // State to show loading indicator
+  const [error, setError] = useState(null); // State to handle errors
 
   useEffect(() => {
     const fetchProperty = async () => {
+      console.log('Fetching property with ID:', id); // Debug log
       try {
-        const docRef = doc(db, "properties", id);
+        const docRef = doc(db, 'properties', id);
         const docSnap = await getDoc(docRef);
-        
+
         if (docSnap.exists()) {
+          console.log('Property data:', docSnap.data()); // Debug log
           setProperty(docSnap.data());
         } else {
-          setError("Property not found");
+          setError('Property not found');
         }
       } catch (err) {
-        console.error("Firestore error:", err);
-        setError("Failed to load property");
+        console.error('Firestore error:', err);
+        setError('Failed to load property');
       } finally {
         setLoading(false);
       }
@@ -32,9 +39,10 @@ const PropertyDetails = () => {
     fetchProperty();
   }, [id]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!property) return <div>No property data</div>;
+  if (loading) return <div className="text-center py-20">Loading...</div>;
+  if (error) return <div className="text-center text-red-500 py-20">Error: {error}</div>;
+  if (!property) return <div className="text-center py-20">No property data</div>;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header Section */}
@@ -46,46 +54,40 @@ const PropertyDetails = () => {
         </div>
       </div>
 
-      {/* Image Gallery & Main Info (Top Row) */}
+      {/* Image Slider & Main Info (Top Row) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Image Gallery */}
+        {/* Left Column - Image Slider */}
         <div className="lg:col-span-2">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <img 
-                src={property.images[0]} 
-                className="w-full h-96 object-cover rounded-lg"
-              />
-            </div>
-            {property.images.slice(1, 5).map((img, i) => (
-              <img 
-                key={i} 
-                src={img} 
-                className="h-40 object-cover rounded-lg"
-              />
-            ))}
-          </div>
-
-          {/* Amenities */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Amenities</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {property.amenities.map((item, i) => (
-                <div key={i} className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
-                    {item.icon || <FiHome />}
-                  </div>
-                  <span>{item.name}</span>
-                </div>
+          {property.images && property.images.length > 0 ? (
+            <Swiper
+              modules={[Navigation, Pagination]}
+              navigation
+              pagination={{ clickable: true }}
+              spaceBetween={10}
+              slidesPerView={1}
+              className="rounded-lg"
+            >
+              {property.images.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={img}
+                    alt={`Property Image ${index + 1}`}
+                    className="w-full h-96 object-cover rounded-lg"
+                  />
+                </SwiperSlide>
               ))}
+            </Swiper>
+          ) : (
+            <div className="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg">
+              <p className="text-gray-500">No Image Available</p>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Right Column - Price & Inquiry */}
         <div className="bg-white p-6 rounded-lg shadow-md sticky top-4">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-2xl font-bold">${property.price.toLocaleString()}</span>
+            <span className="text-2xl font-bold">${property.price?.toLocaleString()}</span>
             <div className="flex space-x-2">
               <button className="p-2 rounded-full bg-gray-100">
                 <FiShare2 />
@@ -98,28 +100,28 @@ const PropertyDetails = () => {
 
           {/* Inquiry Form */}
           <form className="space-y-4">
-            <input 
-              type="text" 
-              placeholder="Your Name" 
+            <input
+              type="text"
+              placeholder="Your Name"
               className="w-full p-3 border rounded-lg"
             />
-            <input 
-              type="email" 
-              placeholder="Email" 
+            <input
+              type="email"
+              placeholder="Email"
               className="w-full p-3 border rounded-lg"
             />
-            <input 
-              type="tel" 
-              placeholder="Phone" 
+            <input
+              type="tel"
+              placeholder="Phone"
               className="w-full p-3 border rounded-lg"
             />
-            <textarea 
-              placeholder="Message" 
-              rows="4" 
+            <textarea
+              placeholder="Message"
+              rows="4"
               className="w-full p-3 border rounded-lg"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
             >
               Send Inquiry
@@ -128,16 +130,21 @@ const PropertyDetails = () => {
 
           {/* Agent Info */}
           <div className="mt-6 pt-6 border-t">
-            <div className="flex items-center">
-              <img 
-                src={property.agent.photo} 
-                className="w-12 h-12 rounded-full mr-3"
-              />
-              <div>
-                <h4 className="font-medium">{property.agent.name}</h4>
-                <p className="text-sm text-gray-600">Agent</p>
+            {property.agent ? (
+              <div className="flex items-center">
+                <img
+                  src={property.agent.photo || 'https://via.placeholder.com/150'}
+                  alt="Agent"
+                  className="w-12 h-12 rounded-full mr-3"
+                />
+                <div>
+                  <h4 className="font-medium">{property.agent.name || 'Unknown Agent'}</h4>
+                  <p className="text-sm text-gray-600">Agent</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <p className="text-gray-500">No agent information available</p>
+            )}
             <button className="w-full mt-4 border border-blue-600 text-blue-600 py-2 rounded-lg">
               Contact Agent
             </button>
@@ -163,32 +170,16 @@ const PropertyDetails = () => {
                 <span className="text-gray-600">Bedrooms</span>
                 <p>{property.bedrooms}</p>
               </div>
-              {/* Add more details... */}
+              <div className="border-b pb-2">
+                <span className="text-gray-600">Built Area</span>
+                <p>{property.area} sqft</p>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Area Info */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Area</h2>
-          <div className="space-y-4">
-            <div>
-              <span className="text-gray-600">Built Area</span>
-              <p>{property.area} sqft</p>
-            </div>
-            {/* Add more area info... */}
-          </div>
-        </div>
-      </div>
-
-      {/* Similar Properties */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">Similar Properties</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Map through similar properties... */}
         </div>
       </div>
     </div>
   );
 };
+
 export default PropertyDetails;
