@@ -12,6 +12,12 @@ import AdminLayout from './pages/admin/AdminLayout';
 import AdminRoute from './components/admin/AdminRoute';
 import Dashboard from './pages/admin/Dashboard'; // Fixed path
 import Settings from './pages/admin/Settings';
+import Enquiries from './pages/admin/Enquiries';
+import ManageProperties from './pages/admin/ManageProperties'; // Fixed path
+import { adminAuth } from './firebase-admin'; // Fixed path
+import AdminProperties from './pages/admin/AdminProperties';
+import AddPropertyForm from './pages/admin/AddPropertyForm';
+
 
 import './App.css';
 function App() {
@@ -41,6 +47,12 @@ function App() {
               
               }
             >
+              
+             <Route path="/admin/manage-properties/add" element={<AddPropertyForm />} />
+              <Route path="manage-properties" element={<ManageProperties />} />
+              <Route path="enquiries" element={<Enquiries />} />
+              {/* Nested routes under AdminLayout */}
+              <Route path="adminproperties" element={<AdminProperties />} />
               <Route path="dashboard" element={<Dashboard />} /> 
               <Route path="settings" element={<Settings />} />
             </Route>
