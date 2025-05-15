@@ -49,30 +49,34 @@ const Properties = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map((property) => (
               <motion.div
-                key={property.id}
-                className="bg-white border rounded-lg shadow hover:shadow-lg transition overflow-hidden"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                {property.images && property.images.length > 0 && (
-                  <img
-                    src={property.images[0]} // Display the first image
-                    alt={property.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">{property.title}</h3>
-                  <p className="text-gray-600 mb-2">{property.location}</p>
-                  <p className="text-gray-800 font-bold mb-2">${property.price}</p>
-                  <p className="text-gray-600 mb-2">{property.bedrooms} BHK</p>
-                  <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-  <Link to={`/properties/${property.id}`}>View Details</Link>
-</button>
-
+              key={property.id}
+              className="bg-white border rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Display the first image from the files array */}
+              {property.files && property.files.length > 0 ? (
+                <img
+                  src={property.files[0].url} // Use the correct field: files
+                  alt={property.title}
+                  className="w-full h-48 object-cover"
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                  <p className="text-gray-500">No Image Available</p>
                 </div>
-              </motion.div>
+              )}
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-2">{property.title}</h3>
+                <p className="text-gray-600 mb-2">{property.location}</p>
+                <p className="text-gray-800 font-bold mb-2">${property.price}</p>
+                <p className="text-gray-600 mb-2">{property.bedrooms} BHK</p>
+                <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                  <Link to={`/properties/${property.id}`}>View Details</Link>
+                </button>
+              </div>
+            </motion.div>
             ))}
           </div>
         )}

@@ -1,8 +1,16 @@
+import React, { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { motion } from 'framer-motion';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase'; // Import Firestore instance
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper/modules';
+import { useNavigate } from 'react-router'; // For navigation
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Temporary data - replace with backend data later
 const progressData = [
   { name: 'Jan', value: 400 },
   { name: 'Feb', value: 300 },
@@ -11,18 +19,34 @@ const progressData = [
   { name: 'May', value: 500 },
   { name: 'Jun', value: 900 },
 ];
-
-const properties = [
-  { id: 1, title: 'Luxury Villa', location: 'Beverly Hills', price: '2.5M', bhk: '4 BHK', image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-  { id: 2, title: 'Modern Apartment', location: 'Downtown', price: '$1.2M', bhk: '3 BHK', image: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-  { id: 3, title: 'Beach House', location: 'Malibu', price: '$3.8M', bhk: '5 BHK', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-  { id: 4, title: 'City Penthouse', location: 'Manhattan', price: '$4.5M', bhk: '4 BHK', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' },
-];
-
 const Home = () => {
   const [heroRef, heroInView] = useInView({ threshold: 0.5 });
   const [graphRef, graphInView] = useInView({ threshold: 0.3 });
+  const [properties, setProperties] = useState([]); // State to store properties from Firestore
+  const [loading, setLoading] = useState(true); // State to track loading status
+  const navigate = useNavigate(); // For navigation
+
   const [propertiesRef, propertiesInView] = useInView({ threshold: 0.2 });
+
+  // Fetch properties from Firestore
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'properties')); // Fetch the 'properties' collection
+        const propertyList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setProperties(propertyList); // Update the state with fetched properties
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   return (
     <div className="snap-y snap-mandatory h-screen overflow-y-scroll">
@@ -46,8 +70,7 @@ const Home = () => {
           </p>
         </motion.div>
       </section>
-
-        {/* Properties Section */}
+       {/* Featured Properties Section */}
       <section 
         ref={propertiesRef}
         className="min-h-screen snap-start py-20 bg-white"
@@ -61,39 +84,71 @@ const Home = () => {
           <h2 className="text-3xl font-bold text-center mb-16 text-gray-800">
             Featured Properties
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {properties.map((property) => (
-              <div key={property.id} className="rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <div className="h-48 overflow-hidden">
-                  <img 
-                    src={property.image} 
-                    alt={property.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-xl mb-2">{property.title}</h3>
-                  <p className="text-gray-600 mb-1 flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {property.location}
-                  </p>
-                  <div className="flex justify-between mt-4">
-                    <span className="font-bold text-blue-600">{property.price}</span>
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                      {property.bhk}
-                    </span>
-                  </div>
-                </div>
+          {loading ? (
+            <p className="text-center text-gray-500">Loading properties...</p>
+          ) : properties.length > 0 ? (
+            <>
+              {/* Swiper Slider */}
+              <Swiper
+                modules={[Navigation, Pagination]}
+                spaceBetween={20}
+                slidesPerView={1}
+                navigation
+                pagination={{ clickable: true }}
+                breakpoints={{
+                  640: { slidesPerView: 1 },
+                  768: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                }}
+              >
+                {properties.slice(0, 8).map((property) => (
+                  <SwiperSlide key={property.id}>
+                    <div className="rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                      <div className="h-48 overflow-hidden">
+                        <img 
+                          src={property.files?.[0]?.url || 'https://via.placeholder.com/300'} 
+                          alt={property.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-bold text-xl mb-2">{property.title}</h3>
+                        <p className="text-gray-600 mb-1 flex items-center">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {property.location}
+                        </p>
+                        <div className="flex justify-between mt-4">
+                          <span className="font-bold text-blue-600">{property.price}</span>
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                            {property.bhk || 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* View All Properties Button */}
+              <div className="text-center mt-10">
+                <button
+                  onClick={() => navigate('/properties')} // Navigate to Properties.jsx
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                >
+                  View All Properties
+                </button>
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <p className="text-center text-gray-500">No properties available</p>
+          )}
         </motion.div>
       </section>
-      {/* Progress Graph Section */}
-      <section 
+       {/* Progress Graph Section */}
+       <section 
         ref={graphRef}
         className="h-screen snap-start bg-gray-50 flex flex-col items-center justify-center p-8"
       >
@@ -122,9 +177,6 @@ const Home = () => {
           </p>
         </motion.div>
       </section>
-
-    
-      
     </div>
   );
 };
