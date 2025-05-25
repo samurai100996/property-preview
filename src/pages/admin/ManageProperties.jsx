@@ -83,7 +83,7 @@ const EditPropertyList = ({ properties, onDelete }) => (
             <tr key={property.id}>
               <td className="border border-gray-300 p-2">{property.title}</td>
               <td className="border border-gray-300 p-2">{property.location}</td>
-              <td className="border border-gray-300 p-2">${property.price}</td>
+              <td className="border border-gray-300 p-2">₹ {property.price}</td>
               <td className="border border-gray-300 p-2">
                 <button
                   onClick={() => onDelete(property.id)}

@@ -258,7 +258,7 @@ const AddPropertyForm = () => {
         <div>
           <label className="block text-sm font-medium mb-1">Price</label>
           <input
-            type="number"
+             type="interger"
             name="price"
             value={formData.price}
             onChange={handleChange}
@@ -296,6 +296,9 @@ const AddPropertyForm = () => {
             <option value="Apartment">Apartment</option>
             <option value="House">House</option>
             <option value="Villa">Villa</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Land">Land</option>
+            <option value="Bungalow">Bungalow</option>
           </select>
         </div>
 
