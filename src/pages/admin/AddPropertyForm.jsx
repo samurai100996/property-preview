@@ -1,8 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { db } from '../../firebase'; // Import Firestore instance
 import { collection, addDoc } from 'firebase/firestore';
+import { FaHandHoldingWater } from "react-icons/fa";
+import { FaPersonSwimming,FaPersonShelter , FaCar} from "react-icons/fa6";
+import { PiElevatorDuotone } from "react-icons/pi";
+import { GiPoliceOfficerHead } from "react-icons/gi";
+
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { FiWifi, FiCoffee, FiTv, FiAirplay, FiDroplet, FiX } from 'react-icons/fi';
+import { FiWifi, FiCoffee, FiTv, FiAirplay, FiX } from 'react-icons/fi';
 
 const AddPropertyForm = () => {
   const [formData, setFormData] = useState({
@@ -11,12 +16,18 @@ const AddPropertyForm = () => {
     price: '',
     description: '',
     type: '',
+    facing:'',
+    videoUrl:'',
     bedrooms: '',
+    parking:'',
     area: '',
+    carpetarea:'',
+    plotsize:'',
     files: [], // To store uploaded file URLs
     amenities: [],
+    videoUrl:'',
     agent: {
-      name: '',
+      name: 'Amit Gupta',
       photo: '',
     },
   });
@@ -183,6 +194,8 @@ const AddPropertyForm = () => {
       // Create a copy of the form data to submit
       const propertyData = {
         ...formData,
+      carpetarea: Number(formData.carpetarea),
+      facing: formData.facing.toLowerCase(), // Ensure consistent casing
         createdAt: new Date(),
       };
       
@@ -198,10 +211,16 @@ const AddPropertyForm = () => {
         price: '',
         description: '',
         type: '',
+        facing:'',
+        videoUrl:'',
         bedrooms: '',
+        parking:'',
         area: '',
+        carpetarea:'',
+        plotsize:'',
         files: [],
         amenities: [],
+        videoUrl:'',
         agent: {
           name: '',
           photo: '',
@@ -218,8 +237,14 @@ const AddPropertyForm = () => {
     { name: 'Coffee Maker', icon: <FiCoffee /> },
     { name: 'TV', icon: <FiTv /> },
     { name: 'Air Conditioning', icon: <FiAirplay /> },
-    { name: 'Parking', icon: <FiCoffee /> },
-    { name: 'Swimming Pool', icon: <FiDroplet /> },
+    { name: 'Parking', icon: <FaCar /> },
+    { name: 'Swimming Pool', icon: <FaPersonSwimming /> },
+    {name:'24x7 Water Supply',icon:<FaHandHoldingWater/>},
+    {name:'Lift',icon:<PiElevatorDuotone/>},
+    {name:'Security',icon:<GiPoliceOfficerHead/>},
+    {name:'Servent Room',icon:<FaPersonShelter/>},
+
+
   ];
 
   return (
@@ -299,9 +324,42 @@ const AddPropertyForm = () => {
             <option value="Commercial">Commercial</option>
             <option value="Land">Land</option>
             <option value="Bungalow">Bungalow</option>
+            <option value="Farmhouse">Farmhouse</option>
+            <option value="Penthouse">Penthouse</option>
+            <option value="Duplex">Duplex</option>
+            <option value="Studio">Studio</option>
+            <option value="Row House">Row House</option>
+            <option value="Independent House">Independent House</option>
+            <option value="Mansion">Mansion</option>
           </select>
         </div>
 
+  {/* facing */}
+  <div>
+          <label className="block text-sm font-medium mb-1">Facing</label>
+          <select
+            name="facing"
+            value={formData.facing}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            required
+          >
+            <option value="">Select facing</option>
+            <option value="....">....</option>
+            <option value="East">East</option>
+            <option value="West">West</option>
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="South-East">South-East</option>
+            <option value="Sounth-West">Sounth-West</option>
+            <option value="North-West">North-West</option>
+            <option value="North-East">North-East</option>
+           
+
+          </select>
+        </div>
+
+  
         {/* Bedrooms */}
         <div>
           <label className="block text-sm font-medium mb-1">Bedrooms</label>
@@ -309,6 +367,20 @@ const AddPropertyForm = () => {
             type="number"
             name="bedrooms"
             value={formData.bedrooms}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            placeholder="Enter number of bedrooms"
+            required
+          />
+        </div>
+
+{/* Car parking */}
+<div>
+          <label className="block text-sm font-medium mb-1">Car Parking</label>
+          <input
+            type="number"
+            name="parking"
+            value={formData.parking}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg"
             placeholder="Enter number of bedrooms"
@@ -329,7 +401,33 @@ const AddPropertyForm = () => {
             required
           />
         </div>
-
+ {/* Carpet Area */}
+ <div>
+          <label className="block text-sm font-medium mb-1">Carpet Area (sqft)</label>
+          <input
+            type="number"
+            name="carpetarea"
+            value={formData.carpetarea}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            placeholder="Enter built area"
+            required
+          />
+        </div>
+         {/* Plot Size */}
+ <div>
+          <label className="block text-sm font-medium mb-1">Plot Size (sqft)</label>
+          <input
+            type="number"
+            name="plotsize"
+            value={formData.plotsize}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg"
+            placeholder="Enter built area"
+            required
+          />
+        </div>
+        
         {/* Images */}
         <div>
           <label className="block text-sm font-medium mb-1">Upload Images/Videos</label>
@@ -430,7 +528,20 @@ const AddPropertyForm = () => {
             ))}
           </div>
         </div>
-
+{/* YouTube Video Link */}
+<div>
+  <label className="block text-sm font-medium mb-1">YouTube Video Link</label>
+  <input
+    type="url"
+    name="videoUrl"
+    value={formData.videoUrl}
+    onChange={handleChange}
+    className="w-full p-3 border rounded-lg"
+    placeholder="Paste YouTube video URL (e.g. https://youtu.be/...)"
+    pattern="^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)[\w-]{11,}"
+    title="Please enter a valid YouTube video URL"
+  />
+</div>
         {/* Submit Button */}
         <button
           type="submit"

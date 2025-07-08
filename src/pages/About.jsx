@@ -95,6 +95,7 @@ const RealtorAboutPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 overflow-hidden">
+      
       {/* Animated Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div 
@@ -114,7 +115,15 @@ const RealtorAboutPage = () => {
           }}
         />
       </div>
-
+{/* Mouse Follower */}
+<div
+        className="fixed w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full pointer-events-none z-50 mix-blend-difference transition-transform duration-100 ease-out"
+        style={{
+          left: mousePosition.x - 12,
+          top: mousePosition.y - 12,
+          transform: 'scale(0.8)'
+        }}
+      />
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-4">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">

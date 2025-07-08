@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import AddPropertyForm from './AddPropertyForm';
+import { useNavigate } from 'react-router';
 
 const ManageProperties = () => {
   const [activeTab, setActiveTab] = useState('add'); // State to toggle between tabs
   const [properties, setProperties] = useState([]); // State to store properties
-
+  const navigate = useNavigate();
+  
   // Fetch properties from Firestore
   useEffect(() => {
     const fetchProperties = async () => {
@@ -28,7 +30,9 @@ const ManageProperties = () => {
       setProperties((prev) => prev.filter((property) => property.id !== id));
     }
   };
-
+  const handleEdit = (propertyId) => {
+    navigate(`/admin/edit-property/${propertyId}`);
+  };
   return (
     <div className="manage-properties p-6">
       <h1 className="text-2xl font-bold mb-6">Manage Properties</h1>
@@ -61,9 +65,15 @@ const ManageProperties = () => {
     </div>
   );
 };
-
+// {activeTab === 'edit' && (
+//   <EditPropertyList 
+//     properties={properties} 
+//     onDelete={handleDelete}
+//     onEdit={handleEdit}
+//   />
+// )}
 // EditPropertyList Component
-const EditPropertyList = ({ properties, onDelete }) => (
+const EditPropertyList = ({ properties, onDelete ,onEdit}) => (
   <div>
     <h2 className="text-xl font-semibold mb-4">Edit Property List</h2>
     {properties.length === 0 ? (
@@ -85,6 +95,12 @@ const EditPropertyList = ({ properties, onDelete }) => (
               <td className="border border-gray-300 p-2">{property.location}</td>
               <td className="border border-gray-300 p-2">₹ {property.price}</td>
               <td className="border border-gray-300 p-2">
+              <button
+              onClick={() => onEdit(property.id)}
+              className="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+            >
+              Edit
+            </button>
                 <button
                   onClick={() => onDelete(property.id)}
                   className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
